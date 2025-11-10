@@ -49,7 +49,7 @@ function TitleSection() {
           autoAlpha: 0,
           x: -100,
           stagger: 0.07,
-          ease: "circ.out",
+          ease: "circ.inOut",
         },
         "-=0.5s"
       );
