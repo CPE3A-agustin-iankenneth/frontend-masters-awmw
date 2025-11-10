@@ -25,7 +25,7 @@ function TitleSection() {
 
   useGSAP(
     () => {
-      const split = SplitText.create(".title", {
+      SplitText.create(".title", {
         type: "words, chars",
         wordsClass: "title-word++",
         charsClass: "title-char++",
@@ -34,32 +34,32 @@ function TitleSection() {
       const tl = gsap.timeline();
 
       tl.from(".title-word1 > .title-char", {
-        duration: 0.8,
+        duration: 0.5,
         autoAlpha: 0,
         y: 100,
-        stagger: 0.04,
+        stagger: 0.08,
         ease: "circ.out",
       });
 
       tl.from(
         ".title-word2 > .title-char",
         {
-          duration: 0.5,
+          duration: 0.3,
           autoAlpha: 0,
           x: -100,
-          stagger: 0.04,
+          stagger: 0.08,
           ease: "circ.out",
         },
-        "-=0.8s"
+        "-=0.5s"
       );
 
       tl.from(
         ".title-word3 > .title-char",
         {
-          duration: 0.5,
+          duration: 0.4,
           autoAlpha: 0,
           y: -100,
-          stagger: 0.04,
+          stagger: 0.08,
           ease: "circ.out",
         },
         "-=0.6s"
@@ -68,8 +68,9 @@ function TitleSection() {
       tl.from(
         ".tl-start",
         {
-          width: 0,
-          duration: 0.1,
+          height: 0,
+          duration: 0.4,
+          ease: "circ.out",
         },
         0.2
       );
@@ -78,10 +79,10 @@ function TitleSection() {
         ".tl-main",
         {
           width: 0,
-          duration: 0.5,
+          duration: 0.8,
           ease: "circ.out",
         },
-        0.3
+        0.4
       );
     },
     {
