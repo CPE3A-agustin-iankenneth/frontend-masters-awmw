@@ -65,6 +65,19 @@ function TitleSection() {
         "-=0.6s"
       );
 
+      tl.to(
+        ".tl-dot",
+        {
+          opacity: 1,
+          duration: 0.01,
+          repeat: 6,
+          repeatDelay: 0.05,
+          yoyo: true,
+          ease: "circ.out",
+        },
+        "-=0.1s"
+      );
+
       tl.from(
         ".tl-start",
         {
@@ -105,7 +118,7 @@ function TitleSection() {
             <div className="tl-start absolute left-0 top-1/2 -translate-y-1/2 h-8 w-2 bg-orange-500" />
           </div>
           {/* Dot */}
-          <div className="tl-dot absolute -top-2 -right-4 h-4 aspect-square bg-orange-500" />
+          <div className="tl-dot absolute -top-2 -right-4 h-4 aspect-square bg-orange-500 opacity-0" />
         </span>
         <span className="relative block left-[1.6em] text-right">basics</span>
       </h1>
