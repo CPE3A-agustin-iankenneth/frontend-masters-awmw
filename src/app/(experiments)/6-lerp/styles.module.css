@@ -1,7 +1,0 @@
-.title {
-  --weight: calc((1 - var(--distance)) * 800 + 100);
-  --space: calc((1 - var(--distance)) * 0.3em);
-  
-  font-variation-settings: 'wght' var(--weight);
-  letter-spacing: var(--space);
-}

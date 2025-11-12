@@ -11,25 +11,44 @@ export default function Page() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    window.addEventListener("mousemove", (event) => {
-      if (!titleRef.current) return;
+    const controller = new AbortController();
 
-      const { innerWidth, innerHeight } = window;
-      // Calculate normalized distance from center (0,0) to center of screen (1,1)
-      const centerX = innerWidth / 2;
-      const centerY = innerHeight / 2;
+    window.addEventListener(
+      "mousemove",
+      (event) => {
+        console.log("move");
 
-      const maxDist = distance(0, 0, centerX, centerY);
-      let dist = distance(centerX, centerY, event.clientX, event.clientY);
+        if (!titleRef.current) return;
 
-      dist /= maxDist;
+        const { innerWidth, innerHeight } = window;
+        // Calculate normalized distance from center (0,0) to center of screen (1,1)
+        const centerX = innerWidth / 2;
+        const centerY = innerHeight / 2;
 
-      titleRef.current.style.setProperty("--distance", dist.toString());
-    });
+        const maxDist = distance(0, 0, centerX, centerY);
+        let dist = distance(centerX, centerY, event.clientX, event.clientY);
+
+        dist /= maxDist;
+
+        titleRef.current.style.setProperty("--distance", dist.toString());
+      },
+      {
+        signal: controller.signal,
+      }
+    );
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   return (
     <div className="w-screen h-screen bg-black text-white flex items-center justify-center">
+      {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+      <script
+        crossOrigin="anonymous"
+        src="//unpkg.com/react-scan/dist/auto.global.js"
+      />
       <h1
         className={cn(
           "uppercase text-[10vh] leading-none relative",

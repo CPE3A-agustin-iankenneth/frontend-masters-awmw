@@ -18,5 +18,9 @@
   {
     "url": "/5-variables",
     "name": "5 Variables"
+  },
+  {
+    "url": "/6-custom-cursor",
+    "name": "6 Custom Cursor"
   }
 ]
