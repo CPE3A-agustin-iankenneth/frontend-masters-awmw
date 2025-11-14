@@ -74,7 +74,7 @@ export default function Page() {
         })
         .to(progress, {
           delay: 0.2,
-          duration: 0.6,
+          duration: 0.8,
           current: 1,
         });
     },
