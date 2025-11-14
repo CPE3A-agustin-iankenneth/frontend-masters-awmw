@@ -16,8 +16,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
 });
 
-console.log(audiowide);
-
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div
@@ -28,7 +26,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         s.section
       )}
     >
-      {children}
+      <div className="fixed z-10 inset-0 bg-linear-to-t from-black to-[#1B1B1B]" />
+      <div className="relative z-20">{children}</div>
     </div>
   );
 }
