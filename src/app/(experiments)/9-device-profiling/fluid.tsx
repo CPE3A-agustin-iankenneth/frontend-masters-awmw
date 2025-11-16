@@ -335,7 +335,7 @@ export function useFluid({
       divergence: divergenceRT,
       curl: curlRT,
     };
-  }, [gl]);
+  }, [dyeRes, gl, simRes]);
 
   // Create shader materials
   const clearMaterial = useMemo(
@@ -351,7 +351,7 @@ export function useFluid({
         depthTest: false,
         depthWrite: false,
       }),
-    [simRes]
+    [pressureDissipation, simRes]
   );
 
   const splatMaterial = useMemo(
@@ -591,11 +591,7 @@ export function useFluid({
   );
 
   // Simulation loop
-  useFrame((state, delta) => {
-    // console.log("useFrame");
-
-    // if (!displayMeshRef.current) return;
-
+  useFrame((state) => {
     const currentSplats = [...splatsRef.current];
     splatsRef.current = [];
 
@@ -684,12 +680,4 @@ export function useFluid({
     density,
     velocity,
   };
-
-  // return (
-  //   <mesh
-  //     ref={displayMeshRef}
-  //     geometry={quadGeometry}
-  //     material={displayMaterial}
-  //   />
-  // );
 }
