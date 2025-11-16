@@ -260,7 +260,7 @@ function createQuadGeometry() {
   return geometry;
 }
 
-export function Fluid() {
+export function useFluid() {
   const { gl, size } = useThree();
   const quadGeometry = useMemo(() => createQuadGeometry(), []);
 
@@ -670,11 +670,16 @@ export function Fluid() {
     gl.setRenderTarget(null);
   });
 
-  return (
-    <mesh
-      ref={displayMeshRef}
-      geometry={quadGeometry}
-      material={displayMaterial}
-    />
-  );
+  return {
+    density,
+    velocity,
+  };
+
+  // return (
+  //   <mesh
+  //     ref={displayMeshRef}
+  //     geometry={quadGeometry}
+  //     material={displayMaterial}
+  //   />
+  // );
 }
