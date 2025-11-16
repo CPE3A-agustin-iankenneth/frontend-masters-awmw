@@ -30,5 +30,9 @@
   {
     "url": "/8-reduced-motion",
     "name": "8 Reduced Motion"
+  },
+  {
+    "url": "/9-device-profiling",
+    "name": "9 Device Profiling"
   }
 ]
