@@ -260,19 +260,18 @@ function createQuadGeometry() {
   return geometry;
 }
 
-export function useFluid() {
+export function useFluid({
+  simRes = 128,
+  dyeRes = 512,
+  iterations = 3,
+  densityDissipation = 0.97,
+  velocityDissipation = 0.98,
+  pressureDissipation = 0.8,
+  curlStrength = 20,
+  radius = 0.2,
+} = {}) {
   const { gl, size } = useThree();
   const quadGeometry = useMemo(() => createQuadGeometry(), []);
-
-  // Simulation parameters
-  const simRes = 128;
-  const dyeRes = 512;
-  const iterations = 3;
-  const densityDissipation = 0.97;
-  const velocityDissipation = 0.98;
-  const pressureDissipation = 0.8;
-  const curlStrength = 20;
-  const radius = 0.2;
 
   // Create render targets
   const { density, velocity, pressure, divergence, curl } = useMemo(() => {
@@ -506,8 +505,6 @@ export function useFluid() {
     [quadGeometry, gradientSubtractMaterial]
   );
 
-  const displayMeshRef = useRef<THREE.Mesh>(null);
-
   // Mouse/touch input handling
   const [splats, setSplats] = useState<Splat[]>([]);
   const lastMouseRef = useRef<{ x: number; y: number; isInit: boolean }>({
@@ -584,7 +581,7 @@ export function useFluid() {
 
   // Simulation loop
   useFrame((state, delta) => {
-    if (!displayMeshRef.current) return;
+    // if (!displayMeshRef.current) return;
 
     const currentSplats = [...splats];
     setSplats([]);

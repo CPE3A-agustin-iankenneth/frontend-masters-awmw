@@ -1,7 +1,8 @@
 "use client";
 
 import { OrthographicCamera, useTexture } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree, useFrame } from "@react-three/fiber";
+import { useMemo, useEffect, useRef } from "react";
 
 import { useFluid } from "./fluid";
 import * as THREE from "three";
@@ -9,7 +10,11 @@ import * as THREE from "three";
 export default function Page() {
   return (
     <div className="absolute h-screen w-screen top-0 left-0 bg-black">
-      <Canvas>
+      <Canvas
+        gl={{
+          toneMapping: THREE.AgXToneMapping,
+        }}
+      >
         <OrthographicCamera
           makeDefault
           position={[0, 0, 1]}
@@ -27,27 +32,133 @@ export default function Page() {
 }
 
 function Scene() {
-  const logo = useTexture("/m-logo");
+  const logo = useTexture("/m-logo.png") as THREE.Texture<HTMLImageElement>;
 
-  const { density } = useFluid();
+  const { density } = useFluid({
+    densityDissipation: 0.9,
+    curlStrength: 5,
+    radius: 0.8,
+  });
+  const { size } = useThree();
+  const materialRef = useRef<THREE.RawShaderMaterial>(null);
+
+  const uniforms = useMemo(
+    () => ({
+      uDensity: { value: null },
+      uLogo: { value: logo },
+      uBackgroundColor: { value: new THREE.Color("black") },
+      uForegroundColor: { value: new THREE.Color("#c02e28") },
+      uLogoAspect: { value: 1 },
+      uResolution: { value: new THREE.Vector2(size.width, size.height) },
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  // update changes
+  uniforms.uLogo.value = logo;
+  uniforms.uResolution.value.set(size.width, size.height);
+
+  // Update density texture every frame
+  useFrame(() => {
+    if (materialRef.current && density.read.texture) {
+      materialRef.current.uniforms.uDensity.value = density.read.texture;
+    }
+  });
+
+  useEffect(() => {
+    if (logo && logo.image) {
+      uniforms.uLogoAspect.value = logo.image.width / logo.image.height;
+    }
+  }, [logo, uniforms]);
 
   return (
     <mesh geometry={quadGeometry}>
       <shaderMaterial
+        toneMapped={false}
+        ref={materialRef}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
-        uniforms={{
-          uDensity: { value: density.read },
-          uLogo: { value: logo },
-        }}
+        uniforms={uniforms}
       />
     </mesh>
   );
 }
 
-const vertexShader = /*glsl*/ ``;
+const vertexShader = /*glsl*/ `
+  precision highp float;
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = vec4(position.xy, 0, 1);
+  }
+`;
 
-const fragmentShader = /*glsl*/ ``;
+const fragmentShader = /*glsl*/ `
+  precision highp float;
+  uniform sampler2D uDensity;
+  uniform sampler2D uLogo;
+  uniform vec3 uBackgroundColor;
+  uniform vec3 uForegroundColor;
+  uniform float uLogoAspect;
+  uniform vec2 uResolution;
+  varying vec2 vUv;
+
+  void main() {
+    vec2 uv = vUv;
+    
+    // Calculate aspect ratios
+    float screenAspect = uResolution.x / uResolution.y;
+    float logoAspect = uLogoAspect;
+    
+    // Calculate centered, contained logo UV coordinates
+    vec2 logoUV = uv;
+    
+    if (screenAspect > logoAspect) {
+      // Screen is wider than logo, fit to height
+      // Logo will be centered horizontally
+      float logoWidth = logoAspect / screenAspect;
+      float offset = (1.0 - logoWidth) * 0.5;
+      logoUV.x = (uv.x - offset) / logoWidth;
+    } else {
+      // Screen is taller than logo, fit to width
+      // Logo will be centered vertically
+      float logoHeight = screenAspect / logoAspect;
+      float offset = (1.0 - logoHeight) * 0.5;
+      logoUV.y = (uv.y - offset) / logoHeight;
+    }
+    
+    // Sample logo texture
+    vec4 logoColor = texture2D(uLogo, logoUV);
+    float logoMask = logoColor.r; // Use red channel as mask (assuming grayscale)
+    
+    // Determine if we're inside or outside the logo bounds
+    bool insideLogo = logoUV.x >= 0.0 && logoUV.x <= 1.0 && logoUV.y >= 0.0 && logoUV.y <= 1.0;
+    
+    // Base color: white parts = foreground, black parts = background
+    vec3 baseColor = mix(uBackgroundColor, uForegroundColor, logoMask);
+    
+    // If outside logo bounds, use background color
+    if (!insideLogo) {
+      baseColor = uBackgroundColor;
+    }
+    
+    // Sample fluid density
+    vec3 fluid = texture2D(uDensity, uv).rgb;
+    fluid = vec3(length(fluid));
+    
+    vec3 fluidHighlight = fluid * 0.1 * logoMask; // Adjust intensity
+    vec3 finalColor = baseColor * (1. + fluidHighlight.r);
+    
+    // Clamp to prevent oversaturation
+    finalColor = clamp(finalColor, 0.0, 1.0);
+    
+    gl_FragColor = vec4(finalColor, 1.0);
+
+    #include <tonemapping_fragment>
+    #include <colorspace_fragment>
+  }
+`;
 
 const quadGeometry = new THREE.BufferGeometry();
 const positions = new Float32Array([-1, -1, 3, -1, -1, 3]);
