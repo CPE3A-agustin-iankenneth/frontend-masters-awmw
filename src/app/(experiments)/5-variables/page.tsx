@@ -43,7 +43,12 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="w-screen h-screen bg-black text-white flex items-center justify-center">
+    <div
+      className={cn(
+        "w-screen h-screen text-white flex items-center justify-center",
+        s.grid
+      )}
+    >
       {/* eslint-disable-next-line @next/next/no-sync-scripts */}
       <script
         crossOrigin="anonymous"

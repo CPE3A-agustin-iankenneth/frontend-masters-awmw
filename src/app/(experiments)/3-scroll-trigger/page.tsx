@@ -1,6 +1,6 @@
 "use client";
 
-import { DrawSVGPlugin, ScrollTrigger } from "gsap/all";
+import { DrawSVGPlugin, ScrollTrigger, SplitText } from "gsap/all";
 import gsap from "gsap";
 import { Highlighted1, Highlighted2, Highlighted3 } from "./highlights";
 import { useGSAP } from "@gsap/react";
@@ -8,6 +8,7 @@ import { useRef } from "react";
 
 gsap.registerPlugin(DrawSVGPlugin);
 gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(SplitText);
 
 export default function Page() {
   return (
@@ -20,9 +21,29 @@ export default function Page() {
 }
 
 function TitleSection() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  useGSAP(
+    () => {
+      SplitText.create("h1", {
+        type: "words, chars",
+        wordsClass: "word",
+        mask: "words",
+      });
+
+      gsap.from("h1 .word", {
+        y: "100%",
+        stagger: 0.1,
+        ease: "circ.inOut",
+      });
+    },
+    { scope: containerRef }
+  );
   return (
-    <div className="flex h-screen items-center justify-center">
-      <h1 className="title font-black text-[10vh] leading-[0.9] pb-[0.1em] flex flex-col gap-[0.1em] relative right-[0.5em]">
+    <div
+      ref={containerRef}
+      className="flex h-screen items-center justify-center"
+    >
+      <h1 className="title font-black text-[10vh] leading-[1.3] pb-[0.1em] flex flex-col gap-[0.1em] relative right-[0.5em] [&>span]:-mb-[0.3em]">
         <span className="block relative text-left text-(--dark-green) italic font-thin">
           gsap
         </span>

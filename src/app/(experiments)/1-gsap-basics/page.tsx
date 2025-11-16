@@ -46,7 +46,7 @@ function TitleSection() {
       <h1 className="title font-black text-[20rem] leading-none pb-[0.1em] text-left">
         GSAP
         <br />
-        basics
+        tweens
       </h1>
     </div>
   );

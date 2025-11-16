@@ -26,5 +26,9 @@
   {
     "url": "/7-image-sequence",
     "name": "7 Image Sequence"
+  },
+  {
+    "url": "/8-reduced-motion",
+    "name": "8 Reduced Motion"
   }
 ]
