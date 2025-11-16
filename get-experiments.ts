@@ -35,7 +35,22 @@ async function getExperiments(): Promise<Experiment[]> {
     }
   }
 
-  return experiments.sort((a, b) => a.name.localeCompare(b.name))
+  return experiments.sort((a, b) => {
+    // Extract numeric prefix from URL (e.g., "/1-gsap-basics" -> 1)
+    const getNumber = (url: string) => {
+      const match = url.match(/^\/(\d+)-/)
+      return match ? parseInt(match[1], 10) : Infinity
+    }
+
+    const numA = getNumber(a.url)
+    const numB = getNumber(b.url)
+
+    // Sort by numeric prefix first, then by name if numbers are equal
+    if (numA !== numB) {
+      return numA - numB
+    }
+    return a.name.localeCompare(b.name)
+  })
 }
 
 async function main() {
