@@ -23,8 +23,8 @@ export function StaticVersion() {
           alt="Rover Cameras"
           className="absolute w-full h-full top-0 left-0 object-cover"
         />
-        <div className="absolute top-1/2 -translate-y-1/2 right-8 max-w-full w-lg text-white">
-          <h2 className="text-6xl mb-2">Cameras</h2>
+        <div className="absolute top-1/2 -translate-y-1/2 right-8 max-w-full w-md text-white">
+          <h2 className="text-5xl mb-2">Cameras</h2>
           <p className="text-balance">
             Mounted on the &quot;head&quot; of the rover&apos;s long-necked
             mast. The SuperCam on the Perseverance rover examines rocks and
@@ -40,7 +40,7 @@ export function StaticVersion() {
           className="absolute w-full h-full top-0 left-0 object-cover"
         />
         <div className="absolute bottom-8 left-8 max-w-full w-lg text-white">
-          <h2 className="text-6xl mb-2">Wheels</h2>
+          <h2 className="text-5xl mb-2">Wheels</h2>
           <p className="text-balance">
             The wheels are made of aluminium, with cleats for traction and
             curved titanium spokes for springy support.
