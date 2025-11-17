@@ -7,15 +7,17 @@ import { DeviceType } from "@/types";
 import { getSelectorsByUserAgent } from "react-device-detect";
 import { getGPUTier } from "detect-gpu";
 import { StaticVersion } from "./logo-static";
+import { useBattery } from "@/hooks/use-battery";
 
 export default function Page() {
-  const shouldUseShaders = useMeasureDevice();
+  const shouldUseShaders = useShouldRenderShader();
   return shouldUseShaders ? <ShaderEffect /> : <StaticVersion />;
 }
 
-function useMeasureDevice() {
+function useShouldRenderShader() {
   const [deviceData, setDeviceData] = useState<DeviceType | null>(null);
   const [gpuTier, setGpuTier] = useState<number | null>(null);
+  const battery = useBattery();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -30,10 +32,17 @@ function useMeasureDevice() {
     });
   }, []);
 
-  if (gpuTier === null || deviceData === null) return true;
+  if (battery.isSupported && battery.fetched && battery.level < 0.2) {
+    return false;
+  }
 
-  const shouldUseShaders =
-    gpuTier > 1 && !deviceData.isMobile && !deviceData.isSafari;
+  if (deviceData && deviceData.isSafari) {
+    return false;
+  }
 
-  return shouldUseShaders;
+  if (typeof gpuTier === "number" && gpuTier < 2) {
+    return false;
+  }
+
+  return true;
 }
