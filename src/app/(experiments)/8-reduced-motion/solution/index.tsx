@@ -5,15 +5,17 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { SplitText, ScrollTrigger } from "gsap/all";
 import { fitContent, remap } from "@/lib/math";
-import { StaticVersion } from "./static-version";
+import { cn } from "@/lib/utils";
+
+import heroImage from "./assets/0001.webp";
+import cameraImage from "./assets/0130.webp";
+import wheelsImage from "./assets/0300.webp";
+import NextImage from "next/image";
 
 gsap.registerPlugin(SplitText);
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Page() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const progress = useRef<number>(0);
-
   const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -30,12 +32,11 @@ export default function Page() {
     query.addEventListener("change", handleChange);
   }, []);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const progress = useRef<number>(0);
+
   useGSAP(
     () => {
-      if (reducedMotion) {
-        return;
-      }
-
       SplitText.create("h1", {
         type: "chars",
         charsClass:
@@ -43,40 +44,16 @@ export default function Page() {
         mask: "chars",
       });
 
+      if (reducedMotion) {
+        return;
+      }
+
       gsap.from("h1 .char", {
         x: "100%",
         rotateY: "90deg",
         stagger: 0.02,
         duration: 0.5,
         ease: "circ.out",
-      });
-
-      gsap.to("h1", {
-        opacity: 0,
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "10% top",
-          toggleActions: "play pause reset reverse",
-        },
-      });
-
-      gsap.to(".super-cam", {
-        opacity: 1,
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "22% top",
-          end: "35% top",
-          toggleActions: "play reverse play reverse",
-        },
-      });
-
-      gsap.to(".wheels", {
-        opacity: 1,
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "95% bottom",
-          toggleActions: "play pause resume reverse",
-        },
       });
 
       gsap
@@ -93,43 +70,105 @@ export default function Page() {
           current: 0.4,
           duration: 0.4,
         })
+        .to(
+          "h1",
+          {
+            opacity: 0,
+            duration: 0.1,
+          },
+          "<+0.01"
+        )
+        .to(".cameras", {
+          opacity: 1,
+          repeat: 1,
+          yoyo: true,
+          duration: 0.1,
+          repeatDelay: 0.2,
+        })
         .to(progress, {
-          delay: 0.2,
           duration: 0.8,
           current: 1,
-        });
+        })
+        .to(
+          ".wheels",
+          {
+            opacity: 1,
+            duration: 0.2,
+          },
+          "-=0.2"
+        );
     },
     { scope: containerRef, dependencies: [reducedMotion], revertOnUpdate: true }
   );
 
-  if (reducedMotion) {
-    return <StaticVersion />;
-  }
-
   return (
-    <div ref={containerRef} className="h-[400vh]">
-      <ImageSequence progress={progress} />
-      <section className="h-screen relative w-full overflow-clip">
-        <h1 className="uppercase fixed text-[8vw] w-full text-center -bottom-[0.1em] leading-none right-[0.05em] tracking-widest text-transparent">
-          Perseverance
-        </h1>
-        <div className="super-cam fixed top-1/2 -translate-y-1/2 right-8 max-w-full w-md text-white opacity-0">
-          <h2 className="text-5xl mb-2">Cameras</h2>
-          <p className="text-balance">
-            Mounted on the &quot;head&quot; of the rover&apos;s long-necked
-            mast. The SuperCam on the Perseverance rover examines rocks and
-            soils with a camera, laser, and spectrometers to seek chemical
-            materials that could be related to past life on Mars.
-          </p>
-        </div>
-        <div className="wheels fixed bottom-8 left-8 max-w-full w-lg text-white opacity-0">
-          <h2 className="text-5xl mb-2">Wheels</h2>
-          <p className="text-balance">
-            The wheels are made of aluminium, with cleats for traction and
-            curved titanium spokes for springy support.
-          </p>
-        </div>
-      </section>
+    <div
+      ref={containerRef}
+      className="motion-safe:h-[400vh] motion-reduce:bg-black"
+    >
+      {!reducedMotion && <ImageSequence progress={progress} />}
+      <div
+        className={cn(
+          "relative w-full overflow-clip",
+          !reducedMotion && "h-screen"
+        )}
+      >
+        <section
+          className={cn(
+            "title h-screen fixed w-full",
+            reducedMotion && "relative"
+          )}
+        >
+          <NextImage
+            src={heroImage}
+            alt="Perseverance rover"
+            className="absolute top-0 left-0 w-full h-full object-cover motion-safe:hidden"
+          />
+          <h1 className="uppercase absolute text-[8vw] w-full text-center -bottom-[0.1em] leading-none right-[0.05em] tracking-widest text-transparent">
+            Perseverance
+          </h1>
+        </section>
+        <section
+          className={cn(
+            "cameras fixed h-screen w-full top-0 left-0 opacity-0",
+            reducedMotion && "relative opacity-100"
+          )}
+        >
+          <NextImage
+            src={cameraImage}
+            alt="Perseverance rover cameras"
+            className="absolute top-0 left-0 w-full h-full object-cover motion-safe:hidden"
+          />
+          <div className="absolute top-1/2 -translate-y-1/2 right-10 max-w-full w-md text-white">
+            <h2 className="text-6xl mb-2">Cameras</h2>
+            <p className="text-balance">
+              Mounted on the &quot;head&quot; of the rover&apos;s long-necked
+              mast. The SuperCam on the Perseverance rover examines rocks and
+              soils with a camera, laser, and spectrometers to seek chemical
+              materials that could be related to past life on Mars.
+            </p>
+          </div>
+        </section>
+        <section
+          className={cn(
+            "wheels fixed h-screen w-full opacity-0",
+            reducedMotion && "relative opacity-100"
+          )}
+        >
+          <NextImage
+            src={wheelsImage}
+            alt="Perseverance rover wheels"
+            className="absolute top-0 left-0 w-full h-full object-cover motion-safe:hidden"
+          />
+          <div className="absolute bottom-10 left-16 max-w-full w-md text-white">
+            <h2 className="text-6xl mb-2">Wheels</h2>
+            <p className="text-balance">
+              The wheels are made of aluminium, with cleats for traction and
+              curved titanium spokes for springy support.
+            </p>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
