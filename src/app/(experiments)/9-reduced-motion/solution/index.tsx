@@ -210,7 +210,7 @@ function ImageSequence({ progress }: { progress: React.RefObject<number> }) {
 
     return () => {
       gsap.ticker.remove(cb);
-      window.addEventListener("resize", resizeCanvas);
+      window.removeEventListener("resize", resizeCanvas);
     };
   }, [progress]);
 
