@@ -1,6 +1,6 @@
-# Frontend Masters Course
-
-A collection of animation and interaction experiments for learning.
+[![Frontend Masters](https://static.frontendmasters.com/assets/brand/logos/full.png)](https://frontendmasters.com/courses/winning-websites)
+## Award-Winning Marketing Site Course
+This is a companion repository for the [Award-Winning Marketing Site](https://frontendmasters.com/courses/winning-websites) course on Frontend Masters. This repo contains a collection of animation and interaction exercises and solutions.
 
 ## Getting Started
 
@@ -38,3 +38,9 @@ To switch between versions, edit the experiment's `page.tsx` file and change the
 - https://www.npmjs.com/package/lenis
 - https://tailwindcss.com/
 
+### PNG to Webp Command
+In the **Create Image Sequence with Blender** lesson, you can use this command to convert the images from png to webp:
+
+```bash
+mkdir -p animation-webp && for file in animation/*.png; do cwebp -q 80 "$file" -o "animation-webp/$(basename "${file%.png}.webp")"; done
+```
