@@ -10,7 +10,51 @@ gsap.registerPlugin(SplitText);
 export default function Page() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(() => {}, { scope: containerRef });
+  useGSAP(() => {
+    SplitText.create(".title", {
+      type: "chars, words",
+      wordsClass: "word++",
+      charsClass: "char",
+      mask: "chars",
+    })
+
+    const tl = gsap.timeline()
+
+    tl.from(".title .word1 .char", {
+      y: 200,
+      ease: "circ.out",
+      stagger: 0.05,
+      duration: 0.3,
+    })
+
+    tl.from(".title .word2 .char", {
+      y: -200,
+      ease: "circ.inOut",
+      stagger: 0.05,
+      duration: 0.3,
+    }, "-=0.3")
+
+    tl.from(".tl-start", {
+      height: 0,
+      ease: "circ.out",
+      duration: 0.4,
+    }, "<")
+
+    tl.from(".tl-main", {
+      width: 0,
+      ease: "circ.out",
+      duration: 0.5,
+    }, "<+0.2")
+
+    tl.from(".title .word3 .char", {
+      y: 200,
+      ease: "circ.out",
+      stagger: 0.05,
+      duration: 0.3,
+    }, "-=0.3")
+
+
+  }, { scope: containerRef });
 
   return (
     <div
