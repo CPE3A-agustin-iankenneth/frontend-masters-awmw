@@ -5,6 +5,9 @@ import { Highlighted1, Highlighted2, Highlighted3 } from "./highlights";
 import { TitleSection } from "./title";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/all";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Page() {
   return (
@@ -21,7 +24,15 @@ function DescriptionSection() {
 
   useGSAP(
     () => {
-      const tl = gsap.timeline();
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: "h2",
+          start: "top center",
+          end: "bottom center",
+          toggleActions: "play reverse play reverse",
+          markers: true,
+        }
+      });
 
       tl.from("h2", {
         opacity: 0,
